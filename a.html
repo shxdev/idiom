@@ -1,0 +1,27 @@
+<html>
+<body>
+	<script type="text/javascript">
+	function getObjectProperties(o){
+		var text="";
+		for(var p in o){
+			text+=p+":"+o[p]+"</br>\n";
+		}
+		return text;
+	}	
+		function send(){
+			var xhr=new XMLHttpRequest();
+			xhr.open("POST","XMLHttpRequest.jsp",true);
+			xhr.onreadystatechange=function(e){
+				if(e.srcElement.readyState==4){
+					alert(e.srcElement.responseText);
+				}
+			};
+			xhr.send(content.value);
+		}
+	</script>
+	<textarea id="content" style="width:100%;height:300"></textarea>
+	</br>
+	<input type="button" value="send" onclick="send()"/>
+	</script>
+</body>
+</html>
