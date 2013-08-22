@@ -230,12 +230,14 @@ func newWord(m *InputMessage)string{
 
 func checkIdiom(m *InputMessage) bool {
 	found:=false
-	head:=m.Content[0:3]
-	if config.Idiom[head]!=nil{
-		for i:=0;i<len(config.Idiom[head]);i++{
-			if m.Content==config.Idiom[head][i]{
-				found=true
-				break
+	if len(m.Content)>3{
+		head:=m.Content[0:3]
+		if config.Idiom[head]!=nil{
+			for i:=0;i<len(config.Idiom[head]);i++{
+				if m.Content==config.Idiom[head][i]{
+					found=true
+					break
+				}
 			}
 		}
 	}
