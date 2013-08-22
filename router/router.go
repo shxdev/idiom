@@ -177,7 +177,16 @@ func Router_Link(w http.ResponseWriter, r *http.Request,m *InputMessage){
 }
 
 func Router_Event(w http.ResponseWriter, r *http.Request,m *InputMessage){
-	fmt.Fprintf(w,"%s",m.MsgType)
+	if m.Event=="subscribe"{
+		ret:=help(m)
+		retXml,err:=GetOutputMessage(m,ret).ToXml()
+		if err!=nil{
+			retXml=[]byte{0x00}
+		}
+		fmt.Fprintf(w,"%s",retXml)
+	}else{
+		fmt.Fprintf(w,"%s",m.MsgType)		
+	}
 }
 
 func GetOutputMessage(m *InputMessage,c string)*OutputMessage {
