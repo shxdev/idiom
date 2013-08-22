@@ -11,9 +11,10 @@ type serverInfo struct{
 	RootContext string
 	Port string
 	IdiomFile string
+	Token string
 }
 
-var ServerInfo=serverInfo{"/","8081","idiom.txt"}
+var ServerInfo=serverInfo{"/","8081","idiom.txt","shixiao"}
 
 var Idiom=map[string] []string{}
 

@@ -11,6 +11,8 @@ import(
 	"io/ioutil"
 	"reflect"
 	"math/rand"
+	"sort"
+	"strings"
 )
 
 type InputMessage struct{
@@ -72,6 +74,7 @@ func AddRouter(key string,f func(w http.ResponseWriter, r *http.Request,m *Input
 
 func Router(w http.ResponseWriter, r *http.Request){
 	path:=r.URL.Path[len(config.ServerInfo.RootContext):]
+	echostr:=util.GetParameter(r.URL.Query(),"echostr")
 	if(util.FileExist(path)){
 		filecontent,err:=ioutil.ReadFile(path)
 		if err==nil{
@@ -80,34 +83,49 @@ func Router(w http.ResponseWriter, r *http.Request){
 			log.Printf("%s",err);
 		}
 
-	}else if len(r.URL.RawQuery)>0{
+	}else if len(echostr)>0{
 		weibosignin(w,r);
 	}else{
-		content,err:=ioutil.ReadAll(r.Body)
-		if err==nil{
-			log.Printf("%s\n",content)
-			m:=new(InputMessage)
-			m.FromXml(content)
-			f:=routerMap[m.MsgType]
-			if f!=nil{
-				f(w,r,m)
+		if validSignature(r){
+			content,err:=ioutil.ReadAll(r.Body)
+			if err==nil{
+				log.Printf("%s\n",content)
+				m:=new(InputMessage)
+				m.FromXml(content)
+				f:=routerMap[m.MsgType]
+				if f!=nil{
+					f(w,r,m)
+				}else{
+					fmt.Fprintf(w,"%s","Can not find router[MsgType="+m.MsgType+"]")
+				}
 			}else{
-				fmt.Fprintf(w,"%s","Can not find router[MsgType="+m.MsgType+"]")
+				log.Printf("%s",err);
 			}
-		}else{
-			log.Printf("%s",err);
 		}
 	}
 }
 
-func weibosignin(w http.ResponseWriter, r *http.Request){
+func validSignature(r *http.Request)bool {
 	queryData:=r.URL.Query()
 	signature:=util.GetParameter(queryData,"signature")
 	timestamp:=util.GetParameter(queryData,"timestamp")
 	nonce:=util.GetParameter(queryData,"nonce")
-	echostr:=util.GetParameter(queryData,"echostr")
-	log.Printf("signature=%s timestamp=%s nonce=%s echostr=%s",signature,timestamp,nonce,echostr)
-	fmt.Fprintf(w,"%s",echostr)
+	log.Printf("signature=%s timestamp=%s nonce=%s",signature,timestamp,nonce)
+	ss:=[]string{config.ServerInfo.Token,timestamp,nonce}
+	sort.Strings(ss)
+	s:=strings.Join(ss,"")
+	sha1s:=util.Sha1(s)
+	return sha1s==signature
+
+	
+}
+
+func weibosignin(w http.ResponseWriter, r *http.Request){
+	if validSignature(r){
+		queryData:=r.URL.Query()
+		echostr:=util.GetParameter(queryData,"echostr")
+		fmt.Fprintf(w,"%s",echostr)
+	}
 }
 
 func Router_Text(w http.ResponseWriter, r *http.Request,m *InputMessage){
