@@ -132,7 +132,7 @@ func Router_Text(w http.ResponseWriter, r *http.Request,m *InputMessage){
 	ret:=""
 	pWord:=config.Players[m.FromUserName]
 	switch m.Content{
-	case "?":
+	case "?","？":
 		ret=help(m)
 	case "2":
 		ret=newWord(m)

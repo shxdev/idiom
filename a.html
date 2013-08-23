@@ -10,7 +10,7 @@
 	}	
 		function send(){
 			var xhr=new XMLHttpRequest();
-			xhr.open("POST","XMLHttpRequest.jsp",true);
+			xhr.open("POST","XMLHttpRequest.jsp?signature=f1003295a0ea95050c54a227842ff7c9c29607bd&timestamp=1377218023&nonce=1377353305",true);
 			xhr.onreadystatechange=function(e){
 				if(e.srcElement.readyState==4){
 					alert(e.srcElement.responseText);
