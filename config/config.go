@@ -5,6 +5,7 @@ import(
 	"os"
 	"log"
 	"idiom/util"
+	"strings"
 )
 
 type serverInfo struct{
@@ -51,7 +52,16 @@ func ProcArgs(args []string) {
 	l:=len(args)
 	if l>1{
 		ServerInfo.Port=args[1]
-	}else if l>2{
-		ServerInfo.RootContext=args[2]
+	}
+
+	if l>2{
+		s:=args[2]
+		if strings.Index(s,"/")!=0{
+			s="/"+s
+		}
+		if strings.LastIndex(s,"/")!=(len(s)-1){
+			s=s+"/"
+		}
+		ServerInfo.RootContext=s
 	}
 }
