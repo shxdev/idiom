@@ -15,7 +15,7 @@ type serverInfo struct{
 	Token string
 }
 
-var ServerInfo=serverInfo{"/","8081","idiom.txt","shixiao"}
+var ServerInfo=serverInfo{"/","8081","idiom.txt",""}
 
 var Idiom=map[string] []string{}
 
